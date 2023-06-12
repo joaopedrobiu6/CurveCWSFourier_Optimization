@@ -6,3 +6,5 @@ All the obtained results can be found in the folder `results/`.
 Research work performed for the Bachelor in Engineering Physics @ Instituto de Plasmas e Fusão Nuclear
 
 all credits to João Pedro Ferreira Biu
+![ext_via_normal_cws_visible](https://github.com/joaopedrobiu6/CurveCWSFourier_Optimization/assets/93256745/5e161eab-a6a4-4662-91b2-6045d560ba7a)
+[output_cws_final_new.pdf](https://github.com/joaopedrobiu6/CurveCWSFourier_Optimization/files/11725148/output_cws_final_new.pdf)
