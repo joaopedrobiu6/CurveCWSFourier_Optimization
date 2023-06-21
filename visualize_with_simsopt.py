@@ -1,4 +1,4 @@
-from simsopt.geo import SurfaceRZFourier, CurveXYZFourier
+from simsopt.geo import SurfaceRZFourier, CurveXYZFourier, CurveCWSFourier
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -45,6 +45,30 @@ plt.axis('off')
 print(f"surface dofs: {surface.x}")
 print(f"curve dofs: {c_xyz.x}")
 
-plt.savefig("curve_surface.png", format='png', bbox_inches='tight', pad_inches=0, transparent=True)
+plt.savefig("curve_surface.png", dpi=300, bbox_inches='tight', transparent=True)
+
+fig = plt.figure()
+ax = fig.add_subplot(projection="3d")
+
+#circular_tokamak = "/home/joaobiu/simsopt_curvecws/tests/test_files/wout_circular_tokamak_reference.nc"
+
+#s = SurfaceRZFourier.from_wout(circular_tokamak, range="full torus", ntheta=64, nphi=64)  # range = 'full torus', 'field period', 'half period'
+
+curve = CurveCWSFourier(surface.mpol, surface.ntor, surface.x, 150, 0, surface.nfp, surface.stellsym)
+curve.set_dofs([6, 0, 1, 0])
+
+gammadash = curve.gammadash()
+x_d = gammadash[:, 0]/100
+y_d = gammadash[:, 1]/100
+z_d = gammadash[:, 2]/100
+
+
+ax.axis(False)
+curve.plot(ax=ax, show=False, plot_derivative=False, close=True)
+surface.plot(ax=ax, show=False, alpha=0.2, close=True)
+#ax.plot(x_d, y_d, z_d)
+plt.savefig("trajectory.png",bbox_inches="tight", dpi=300, transparent=True)
+
+
 plt.show()
 print("\n*******\nPDF SAVED\n*******")
