@@ -11,7 +11,7 @@ from simsopt.geo import (
     MeanSquaredCurvature, LpCurveCurvature, CurveCWSFourier, ArclengthVariation
 )
 
-OUT_DIR = "./output_cws_test/"
+OUT_DIR = "./output_cws_test_2024/"
 os.makedirs(OUT_DIR, exist_ok=True)
 
 # Threshold and weight for the maximum length of each individual coil:
