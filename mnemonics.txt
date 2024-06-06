@@ -1,0 +1,5 @@
+if order=1:
+    num_dofs = 8
+    [theta_l, theta_c0, theta_c1, theta_s1, phi_l, phi_c0, phi_c1, phi_s1]
+
+    theta(t) = theta_l*t + theta_c0 + theta_c1*cos(t) + theta_s1*sin(t)
