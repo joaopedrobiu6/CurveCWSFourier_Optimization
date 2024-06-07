@@ -18,8 +18,8 @@ os.makedirs(OUT_DIR, exist_ok=True)
 #LENGTH_THRESHOLD = 20
 #LENGTH_WEIGHT = 1e-8
 
-LENGTH_THRESHOLD = 20  
-LENGTH_WEIGHT = 1e-8
+LENGTH_THRESHOLD = 20
+LENGTH_WEIGHT = 1
 
 
 # Threshold and weight for the coil-to-coil distance penalty in the objective function:
@@ -34,8 +34,8 @@ CC_WEIGHT = 100
 #CURVATURE_THRESHOLD = 60
 #CURVATURE_WEIGHT = 1e-5
 
-CURVATURE_THRESHOLD = 60
-CURVATURE_WEIGHT = 1e-5
+CURVATURE_THRESHOLD = 600
+CURVATURE_WEIGHT = 1e-9
 
 
 # Threshold and weight for the mean squared curvature penalty in the objective function:
@@ -45,16 +45,16 @@ CURVATURE_WEIGHT = 1e-5
 #LENGTH_CON_WEIGHT = 0.1
 
 MSC_THRESHOLD = 60
-MSC_WEIGHT = 1e-9
-ARCLENGTH_WEIGHT = 3e-8
+MSC_WEIGHT = 1
+ARCLENGTH_WEIGHT = 3
 LENGTH_CON_WEIGHT = 0.1
 
 # SURFACE INPUT FILES FOR TESTING
-wout = 'input.axiTorus_nfp3_QA_final'
+wout = '../input.axiTorus_nfp3_QA_final'
 
 MAXITER = 2000 
-ncoils = 4
-order = 10 # order of dofs of cws curves
+ncoils = 1
+order = 1 # order of dofs of cws curves
 quadpoints = 300 #13 * order
 ntheta = 50
 nphi = 42
@@ -62,7 +62,6 @@ ext_via_normal_factor = 0.2565
 #0.25216216216216214
 
 
-# CREATE FLUX SURFACE
 s = SurfaceRZFourier.from_vmec_input(wout, range="half period", ntheta=ntheta, nphi=nphi)
 s_full = SurfaceRZFourier.from_vmec_input(wout, range="full torus", ntheta=ntheta, nphi=int(nphi*2*s.nfp))
 # CREATE COIL WINDING SURFACE SURFACE
@@ -75,7 +74,26 @@ cws_full.extend_via_normal(ext_via_normal_factor)
 # CREATE CURVES + COILS     
 base_curves = []
 for i in range(ncoils):
-    curve_cws = CurveCWSFourier(
+    # curve_cws = CurveCWSFourier(
+    #     mpol=cws.mpol,
+    #     ntor=cws.ntor,
+    #     idofs=cws.x,
+    #     quadpoints=quadpoints,
+    #     order=order,
+    #     nfp=cws.nfp,
+    #     stellsym=cws.stellsym,
+    # )
+    # angle = (i + 0.5)*(2 * np.pi)/((2) * s.nfp * ncoils)
+    # curve_dofs = np.zeros(len(curve_cws.get_dofs()),)
+    # curve_dofs[0] = 1
+    # curve_dofs[2*order+2] = 0
+    # curve_dofs[2*order+3] = angle
+    # curve_cws.set_dofs(curve_dofs)
+    # curve_cws.fix(0)
+    # curve_cws.fix(2*order+2)
+    # base_curves.append(curve_cws)
+
+    saddle_coil_cws_outer = CurveCWSFourier(
         mpol=cws.mpol,
         ntor=cws.ntor,
         idofs=cws.x,
@@ -84,16 +102,39 @@ for i in range(ncoils):
         nfp=cws.nfp,
         stellsym=cws.stellsym,
     )
-    angle = (i + 0.5)*(2 * np.pi)/((2) * s.nfp * ncoils)
-    curve_dofs = np.zeros(len(curve_cws.get_dofs()),)
-    curve_dofs[0] = 1
-    curve_dofs[2*order+2] = 0
-    curve_dofs[2*order+3] = angle
-    curve_cws.set_dofs(curve_dofs)
-    curve_cws.fix(0)
-    curve_cws.fix(2*order+2)
-    base_curves.append(curve_cws)
-base_currents = [Current(1)*1e5 for i in range(ncoils)]
+    angle = (i + 0.5)*(4 * np.pi)/((2) * s.nfp * ncoils)
+    saddle_coil_dofs_outer = np.zeros(len(saddle_coil_cws_outer.get_dofs()),) 
+    saddle_coil_dofs_outer[order] = np.pi
+    saddle_coil_dofs_outer[2*order+3] = angle
+    saddle_coil_dofs_outer[2*order] = 1
+    saddle_coil_dofs_outer[2*order+5] = 0.4
+    saddle_coil_cws_outer.set_dofs(saddle_coil_dofs_outer)
+    saddle_coil_cws_outer.fix(0)
+    saddle_coil_cws_outer.fix(2*order+2)
+    base_curves.append(saddle_coil_cws_outer)
+
+    saddle_coil_cws_inner = CurveCWSFourier(
+        mpol=cws.mpol,
+        ntor=cws.ntor,
+        idofs=cws.x,
+        quadpoints=quadpoints,
+        order=order,
+        nfp=cws.nfp,
+        stellsym=cws.stellsym,
+    )
+    # angle = (i + 0.5)*(2 * np.pi)/((2) * s.nfp * ncoils)
+    saddle_coil_dofs_inner = np.zeros(len(saddle_coil_cws_inner.get_dofs()),)
+    saddle_coil_dofs_inner[2*order+3] = angle
+    saddle_coil_dofs_inner[2*order] = 1
+    saddle_coil_dofs_inner[2*order+5] = 0.4
+    saddle_coil_cws_inner.set_dofs(saddle_coil_dofs_inner)
+    saddle_coil_cws_inner.fix(0)
+    saddle_coil_cws_inner.fix(2*order+2)
+    base_curves.append(saddle_coil_cws_inner)
+
+
+base_currents = [Current(1)*1e5 for i in range(2*ncoils)]
+
 #base_currents[0].fix_all()
 
 coils = coils_via_symmetries(base_curves, base_currents, s.nfp, True)
