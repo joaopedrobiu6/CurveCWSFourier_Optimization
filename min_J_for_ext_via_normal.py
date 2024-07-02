@@ -39,7 +39,7 @@ def optimization_settings(LENGTH_THRESHOLD_, LENGTH_WEIGHT_, CC_THRESHOLD_, CC_W
  MSC_THRESHOLD, MSC_WEIGHT, ARCLENGTH_WEIGHT, 
  LENGTH_CON_WEIGHT, MAXITER) = optimization_settings(20, 1e-8, 0.1, 100, 60, 1e-5, 20, 1e-9, 3e-8, 0.1, 50)
 
-OUT_DIR = "./evn_sweeping_1/"
+OUT_DIR = "./paper_evn_sweeping_2/"
 os.makedirs(OUT_DIR, exist_ok=True)
 
 ncoils = 4
@@ -48,7 +48,8 @@ quadpoints = 300 #13 * order
 ntheta = 50
 nphi = 42
 
-wout = '/home/joaobiu/simsopt_curvecws/examples/3_Advanced/input.axiTorus_nfp3_QA_final'
+# wout = '/home/joaobiu/simsopt_curvecws/examples/3_Advanced/input.axiTorus_nfp3_QA_final'
+wout= "input.final"
 
 # CREATE FLUX SURFACE
 s = SurfaceRZFourier.from_vmec_input(wout, range="half period", ntheta=ntheta, nphi=nphi)
@@ -88,15 +89,15 @@ def cws_and_curves(factor):
 
 #factor_values = np.arange(0.2560, 0.2570, 0.00001) #np.arange(0.250, 0.260, 0.0001)
 #factor_values = np.arange(0.247, 0.261, 0.0005)
-#factor_values = np.arange(0.1, 0.4, 0.002)
+#factor_values = np.arange(0.01, 0.1, 0.002) # 0.148
 
-factor_values = np.arange(0.25, 0.26, 0.0001)
+factor_values = np.arange(0.14, 0.15, 0.0001)
 
 
 J_values = []
 
 for i in factor_values:
-    OUT_DIR2 = f"./evn_sweeping_1/{i:.5f}/"
+    OUT_DIR2 = f"./paper_evn_sweeping_2/{i:.5f}/"
     os.makedirs(OUT_DIR2, exist_ok=True)
     cws, cws_full, base_curves, base_currents = cws_and_curves(i)
 
@@ -142,7 +143,7 @@ for i in factor_values:
     bs.set_points(s_full.gamma().reshape((-1, 3)))
     curves_to_vtk(curves, OUT_DIR2 + "curves_opt")
     curves_to_vtk(base_curves, OUT_DIR2 + "base_curves_opt")
-    pointData = {"B_N": np.sum(bs.B().reshape((int(nphi*2*s_full.nfp), ntheta, 3)) * s_full.unitnormal(), axis=2)[:, :, None]}
+    pointData = {"B.n": np.sum(bs.B().reshape((int(nphi*2*s_full.nfp), ntheta, 3)) * s_full.unitnormal(), axis=2)[:, :, None]}
     s_full.to_vtk(OUT_DIR2 + "surf_opt", extra_data=pointData)
     cws_full.to_vtk(OUT_DIR2 + "cws_opt")
     bs.set_points(s.gamma().reshape((-1, 3)))
@@ -161,7 +162,7 @@ plt.title("Extend via normal factor variation")
 plt.xlabel("extend_via_normal factor")
 plt.ylabel("JF.J()")
 
-plt.savefig(f"{OUT_DIR}opt_evn_factor.png")
+plt.savefig(f"{OUT_DIR}_opt_evn_factor.png")
 plt.show()
 
 data = np.column_stack([factor_values, J_values])
