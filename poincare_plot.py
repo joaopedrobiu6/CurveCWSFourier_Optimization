@@ -14,7 +14,7 @@ comm = MPI.COMM_WORLD
 
 def pprint(*args, **kwargs): print(*args, **kwargs) if comm.rank == 0 else 1
 
-OUT_DIR = "./poincare_plots_new/"
+OUT_DIR = "./poincare_plots_new_circular/"
 os.makedirs(OUT_DIR, exist_ok=True) if comm.rank == 0 else 1
  
 ntheta = 50
@@ -28,7 +28,7 @@ tmax=1000
 tol=1e-15
 
 filename_bs_final = 'biot_savart_opt.json'
-coils_directory = 'paper_output_cws'
+coils_directory = 'paper_output_cws_circular'
 
 input_file = 'wout_final.nc'
 

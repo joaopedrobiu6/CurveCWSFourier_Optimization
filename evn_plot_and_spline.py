@@ -80,7 +80,7 @@ else:
     x2 = x1
     y2 = y1
 
-x_min, y_min = minimum(x2, y2, savename = outdir1 + "opt_evn_factor_cut.png", ticks=np.linspace(0.14, 0.15, 6, endpoint=True))
+x_min, y_min = minimum(x2, y2, savename = outdir1 + "opt_evn_factor_cut.png", ticks=np.linspace(0.145, 0.155, 6, endpoint=True))
 
 data = np.column_stack([x_min, y_min])
 datafile_path = outdir1 + "minimum.txt"
