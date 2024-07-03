@@ -46,13 +46,20 @@ order = 10 # order of dofs of cws curves
 quadpoints = 300 #13 * order
 ntheta = 50
 nphi = 42
+theta_linspace = np.linspace(0, 1, ntheta, endpoint=True)
+phi_linspace = np.linspace(0, 1, nphi, endpoint=True)
 
 # CREATE FLUX SURFACE (BOUNDARY)
-s = SurfaceRZFourier.from_vmec_input(wout, range="half period", ntheta=ntheta, nphi=nphi)
-s_full = SurfaceRZFourier.from_vmec_input(wout, range="full torus", ntheta=ntheta, nphi=int(nphi*2*s.nfp))
+s = SurfaceRZFourier.from_vmec_input(wout, range="half period", quadpoints_theta=theta_linspace, quadpoints_phi=phi_linspace)#ntheta=ntheta, nphi=nphi)
+phi_linspace_full = np.linspace(0, 1, int(nphi*2*s.nfp), endpoint=True)
+s_full = SurfaceRZFourier.from_vmec_input(wout, range="full torus", quadpoints_theta=theta_linspace, quadpoints_phi=phi_linspace_full)#ntheta=ntheta, nphi=int(nphi*2*s.nfp))
 # CREATE COIL WINDING SURFACE
 cws = SurfaceRZFourier.from_nphi_ntheta(nphi, ntheta, "half period", s.nfp)
-cws_full = SurfaceRZFourier.from_nphi_ntheta(int(nphi*2*s.nfp), ntheta, "full torus", s.nfp)
+# cws_full = SurfaceRZFourier.from_nphi_ntheta(int(nphi*2*s.nfp), ntheta, "full torus", s.nfp)
+cws_full = SurfaceRZFourier(nfp = s.nfp, stellsym=True, mpol=1, ntor=0, quadpoints_phi=phi_linspace_full, quadpoints_theta=theta_linspace)
+
+
+cws = SurfaceRZFourier(nfp=s.nfp, stellsym=True, quadpoints_phi=phi_linspace_full, )
 
 R = s.get_rc(0, 0)
 minor_radius_factor_cws = 1 + 0.149/s.get_zs(1, 0)
