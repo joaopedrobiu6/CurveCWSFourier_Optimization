@@ -145,7 +145,7 @@ bs.set_points(s_full.gamma().reshape((-1, 3)))
 curves = [c.curve for c in coils]
 curves_to_vtk(curves, OUT_DIR + "curves_init")
 curves_to_vtk(base_curves, OUT_DIR + "base_curves_init")
-pointData = {"B_N": np.sum(bs.B().reshape((int(nphi*2*s_full.nfp), ntheta, 3)) * s_full.unitnormal(), axis=2)[:, :, None]}
+pointData = {"B.n": np.sum(bs.B().reshape((int(nphi*2*s_full.nfp), ntheta, 3)) * s_full.unitnormal(), axis=2)[:, :, None]}
 s_full.to_vtk(OUT_DIR + "surf_init", extra_data=pointData)
 cws_full.to_vtk(OUT_DIR + "cws_init")
 
@@ -195,7 +195,7 @@ res = minimize(
 bs.set_points(s_full.gamma().reshape((-1, 3)))
 curves_to_vtk(curves, OUT_DIR + "curves_opt")
 curves_to_vtk(base_curves, OUT_DIR + "base_curves_opt")
-pointData = {"B_N": np.sum(bs.B().reshape((int(nphi*2*s_full.nfp), ntheta, 3)) * s_full.unitnormal(), axis=2)[:, :, None]}
+pointData = {"B.n": np.sum(bs.B().reshape((int(nphi*2*s_full.nfp), ntheta, 3)) * s_full.unitnormal(), axis=2)[:, :, None]}
 s_full.to_vtk(OUT_DIR + "surf_opt", extra_data=pointData)
 cws_full.to_vtk(OUT_DIR + "cws_opt")
 bs.set_points(s.gamma().reshape((-1, 3)))
